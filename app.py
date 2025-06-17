@@ -649,8 +649,8 @@ def predict_from_uploaded_csv(df):
 # 頁面定義與初始化
 # =========================
 pages = [
-    "1. 上傳檔案與篩選分析期間",
-    "2. 預測與結果總覽",
+    "1. 檔案上傳與分析期間篩選"",
+    "2. 開始預測",
     "3. 預測結果篩選與下載",
     "4. 統計圖表分析"
 ]
@@ -734,7 +734,7 @@ def render_next_page_button():
 # =========================
 # 頁面 1: 上傳與篩選
 # =========================
-if page == "1. 上傳檔案與篩選分析期間":
+if page == "1. 檔案上傳與分析期間篩選":
     st.markdown("### 步驟 1: 上傳檔案與篩選分析期間")
 
     uploaded_file = st.file_uploader(
@@ -762,36 +762,47 @@ if page == "1. 上傳檔案與篩選分析期間":
                 st.dataframe(user_df.head(10), use_container_width=True)
     
             user_df['event_time'] = pd.to_datetime(user_df['event_time'])
-            min_date = user_df['event_time'].min().date()
-            max_date = user_df['event_time'].max().date()
-    
-            st.markdown("#### 篩選分析期間")
-    
-            col1, col2 = st.columns(2)
-            with col1:
-                start_date = st.date_input("起始日期", value=min_date, min_value=min_date, max_value=max_date)
-            with col2:
-                end_date = st.date_input("截止日期", value=max_date, min_value=min_date, max_value=max_date)
-    
-            if start_date > end_date:
-                st.error("起始日期不能大於截止日期")
-                st.session_state.filtered_input_data = None
-            else:
-                filtered_df = user_df[(user_df['event_time'].dt.date >= start_date) & (user_df['event_time'].dt.date <= end_date)]
-                st.session_state.filtered_input_data = filtered_df
-                st.info(f"選定期間內資料: {len(filtered_df)} 筆 ({start_date} ~ {end_date})")
+            st.session_state["date_range"] = {
+                "min": user_df['event_time'].min().date(),
+                "max": user_df['event_time'].max().date()
+            }
     
         except Exception as e:
             st.error(f"上傳錯誤：{e}")
             st.session_state.raw_uploaded_data = None
-
+            st.session_state["date_range"] = None
     else:
-        st.info("請先上傳數據文件")
+        st.session_state["date_range"] = None
+    
+    
+    # === 始終顯示「篩選分析期間」 ===
+    st.markdown("#### 篩選分析期間")
+    
+    if st.session_state.get("date_range"):
+        min_date = st.session_state["date_range"]["min"]
+        max_date = st.session_state["date_range"]["max"]
+    
+        col1, col2 = st.columns(2)
+        with col1:
+            start_date = st.date_input("起始日期", value=min_date, min_value=min_date, max_value=max_date)
+        with col2:
+            end_date = st.date_input("截止日期", value=max_date, min_value=min_date, max_value=max_date)
+    
+        if start_date > end_date:
+            st.error("起始日期不能大於截止日期")
+            st.session_state.filtered_input_data = None
+        else:
+            filtered_df = user_df[(user_df['event_time'].dt.date >= start_date) & (user_df['event_time'].dt.date <= end_date)]
+            st.session_state.filtered_input_data = filtered_df
+            st.info(f"選定期間內資料: {len(filtered_df)} 筆 ({start_date} ~ {end_date})")
+    else:
         col1, col2 = st.columns(2)
         with col1:
             st.date_input("起始日期", disabled=True)
         with col2:
             st.date_input("截止日期", disabled=True)
+        st.info("請先上傳資料後才可選擇分析期間")
+
 
     render_next_page_button()
     
@@ -800,8 +811,8 @@ if page == "1. 上傳檔案與篩選分析期間":
 # 頁面 2: 預測與結果總覽
 # =========================
 
-elif page == "2. 預測與結果總覽":
-    st.markdown("### 步驟 2: 執行預測")
+elif page == "2. 開始預測":
+    st.markdown("### 步驟 3: 執行預測")
 
     prediction_ready = (
         st.session_state.get("raw_uploaded_data") is not None and
@@ -836,7 +847,7 @@ elif page == "2. 預測與結果總覽":
         st.info("請先完成資料上傳以進行預測")
 
     # === 預測結果總覽 ===
-    st.markdown("### 步驟 3: 預測結果總覽")
+    st.markdown("### 步驟 4: 預測結果總覽")
 
     if st.session_state.get("prediction_data") is not None:
         df = st.session_state.prediction_data
@@ -877,8 +888,8 @@ elif page == "2. 預測與結果總覽":
 # =========================
 
 elif page == "3. 預測結果篩選與下載":
-    # ==== 步驟 4: 篩選預測結果 ====
-    st.markdown("### 步驟 4: 篩選預測結果")
+    # ==== 步驟 5: 篩選預測結果 ====
+    st.markdown("### 步驟 5: 篩選預測結果")
 
     if st.session_state.get("prediction_data") is not None:
         df = st.session_state.prediction_data.copy()
@@ -991,8 +1002,8 @@ elif page == "3. 預測結果篩選與下載":
         st.info("完成預測後即可篩選結果")
         st.stop()
 
-    # ==== 步驟 5: 確認條件並下載 ====
-    st.markdown("### 步驟 5: 確認條件並下載")
+    # ==== 步驟 6: 確認條件並下載 ====
+    st.markdown("### 步驟 6: 確認條件並下載")
 
     filtered_df = st.session_state.get("filtered_prediction_data", pd.DataFrame()).copy()
     st.markdown(f"**目前符合條件的用戶數量**：{len(filtered_df)} 人")
