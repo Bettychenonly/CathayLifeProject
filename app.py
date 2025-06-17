@@ -743,7 +743,6 @@ if page == "1. 上傳檔案與篩選分析期間":
     help="需包含欄位：user_pseudo_id, event_time, action_group, source, medium, platform, staytime, has_shared, revisit_count"
         )
     
-    st.markdown("### 步驟 2: 篩選分析期間")
     if uploaded_file is not None:
         try:
             user_df = pd.read_csv(uploaded_file)
