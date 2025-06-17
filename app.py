@@ -891,7 +891,7 @@ elif page == "3. 預測結果篩選與下載":
     st.markdown("### 步驟 5: 篩選預測結果")
 
     if st.session_state.get("prediction_data") is None:
-        st.warning("📤 請先完成預測後再執行篩選與下載")
+        st.warning("請先完成預測後再執行篩選與下載")
     else:
         df = st.session_state.prediction_data.copy()
         df["Marketing_Strategy"].fillna("暫無建議，持續觀察", inplace=True)
