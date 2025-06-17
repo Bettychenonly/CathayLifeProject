@@ -651,7 +651,7 @@ def predict_from_uploaded_csv(df):
 pages = [
     "1. 上傳檔案與時間篩選",
     "2. 預測與結果總覽",
-    "3. 篩選與下載檔案",
+    "3. 預測結果篩選與下載",
     "4. 統計圖表分析"
 ]
 
@@ -871,7 +871,12 @@ elif page == "2. 預測與結果總覽":
 
     render_next_page_button()
 
-    # ==== 步驟 5: 篩選預測結果 ====
+# =========================
+# 頁面 4: 篩選與下載
+# =========================
+
+elif page == "4. 預測結果篩選與下載":
+    # ==== 步驟 4: 篩選預測結果 ====
     st.markdown("### 步驟 4: 篩選預測結果")
 
     if st.session_state.get("prediction_data") is not None:
@@ -952,7 +957,7 @@ elif page == "2. 預測與結果總覽":
         df = df[df["Top1_confidence"] >= min_confidence]
 
         # 4️⃣ 轉換機率篩選
-        st.markdown("**轉換機率篩選（任一條件符合即可**")
+        st.markdown("**轉換機率篩選（任一條件符合即可）**")
         enable_conversion_filter = st.checkbox("啟用轉換機率篩選條件（任一符合）", value=False)
 
         min_online_conv = 0.0
@@ -983,53 +988,46 @@ elif page == "2. 預測與結果總覽":
         st.session_state["filtered_prediction_data"] = df
     else:
         st.info("完成預測後即可篩選結果")
-    
-    st.session_state["filtered_prediction_data"] = df
-    
+        st.stop()
+
     # ==== 步驟 5: 確認條件並下載 ====
     st.markdown("### 步驟 5: 確認條件並下載")
 
-    filtered_df = df.copy()
-
+    filtered_df = st.session_state.get("filtered_prediction_data", pd.DataFrame()).copy()
     st.markdown(f"**目前符合條件的用戶數量**：{len(filtered_df)} 人")
-    
+
+    if len(filtered_df) == 0:
+        st.warning("⚠️ 目前條件下沒有符合的用戶，請調整條件後再試")
+        render_next_page_button()
+        st.stop()
+
     today_str = datetime.now().strftime("%Y%m%d")
     default_filename = f"prediction_result_{len(filtered_df)}users_{today_str}"
-    
+
     custom_filename = st.text_input(
         "自訂檔名（選填，系統會自動加上 .csv）",
         value=default_filename,
         placeholder="ex: 旅平險_Top3_信心0.3"
     )
 
-    if len(filtered_df) > 0:
-        if st.button("確認條件並準備下載"):
-            import datetime
-            today_str = datetime.datetime.now().strftime("%Y%m%d")
-            filename = (
-                f"{custom_filename}.csv"
-                if custom_filename else f"prediction_result_{len(filtered_df)}users_{today_str}.csv"
-            )
+    if st.button("確認條件並準備下載"):
+        filename = f"{custom_filename}.csv" if custom_filename else f"prediction_result_{len(filtered_df)}users_{today_str}.csv"
+        export_cols = st.session_state.get("selected_columns", filtered_df.columns.tolist())
 
-            export_cols = st.session_state.get("selected_columns", df.columns.tolist())
-            csv = filtered_df[export_cols].to_csv(index=False).encode("utf-8-sig")
-            st.download_button(
-                label="下載結果 CSV",
-                data=csv,
-                file_name=filename,
-                mime="text/csv",
-                use_container_width=True
-            )
+        csv = filtered_df[export_cols].to_csv(index=False).encode("utf-8-sig")
+        st.download_button(
+            label="下載結果 CSV",
+            data=csv,
+            file_name=filename,
+            mime="text/csv",
+            use_container_width=True
+        )
 
-            with st.expander("下載內容預覽", expanded=False):
-                st.dataframe(filtered_df[export_cols], use_container_width=True)
-        else:
-            st.warning("目前條件下沒有符合的用戶，請調整條件後再試")
-
-    else:
-        st.info("完成預測後即可篩選並下載結果")
+        with st.expander("下載內容預覽", expanded=False):
+            st.dataframe(filtered_df[export_cols], use_container_width=True)
 
     render_next_page_button()
+
 
 # =========================
 # 頁面 4: 統計圖表分析
