@@ -1003,7 +1003,7 @@ elif page == "3. 預測結果篩選與下載":
         st.stop()
 
     # ==== 步驟 6: 篩選條件總結與下載 ====
-    st.markdown("### 📋 步驟 6: 確認條件並下載")
+    st.markdown("###  步驟 6: 確認條件並下載")
     
     if st.session_state.get("prediction_data") is not None:
         df = st.session_state.prediction_data.copy()
@@ -1107,7 +1107,7 @@ elif page == "3. 預測結果篩選與下載":
         st.info("📤 請先完成預測後再執行篩選與下載")
     
 
-    render_next_page_button()
+render_next_page_button()
 
 
 # =========================
