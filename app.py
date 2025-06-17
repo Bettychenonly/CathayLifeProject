@@ -649,7 +649,7 @@ def predict_from_uploaded_csv(df):
 # 頁面定義與初始化
 # =========================
 pages = [
-    "1. 上傳檔案與時間篩選",
+    "1. 上傳檔案與篩選分析期間",
     "2. 預測與結果總覽",
     "3. 預測結果篩選與下載",
     "4. 統計圖表分析"
@@ -734,8 +734,8 @@ def render_next_page_button():
 # =========================
 # 頁面 1: 上傳與篩選
 # =========================
-if page == "1. 上傳檔案與時間篩選":
-    st.markdown("### 步驟 1: 上傳檔案與時間篩選")
+if page == "1. 上傳檔案與篩選分析期間":
+    st.markdown("### 步驟 1: 上傳檔案與篩選分析期間")
 
     uploaded_file = st.file_uploader(
     "上傳包含用戶行為歷程資料的 CSV 文件",
@@ -764,7 +764,8 @@ if page == "1. 上傳檔案與時間篩選":
             user_df['event_time'] = pd.to_datetime(user_df['event_time'])
             min_date = user_df['event_time'].min().date()
             max_date = user_df['event_time'].max().date()
-
+            
+st.markdown("#### 篩選分析期間")
             col1, col2 = st.columns(2)
             with col1:
                 start_date = st.date_input("起始日期", value=min_date, min_value=min_date, max_value=max_date)
