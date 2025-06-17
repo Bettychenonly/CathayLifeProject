@@ -170,12 +170,12 @@ def load_model_with_log():
 if TF_AVAILABLE:
     with st.spinner("正在初始化模型與編碼器..."):
         model, encoders, scalers, load_log = load_model_with_log()
-
-    st.success("模型與特徵編碼器已成功載入")
-
-    with st.expander("查看詳細載入記錄", expanded=False):
-        for line in load_log:
-            st.markdown(f"- {line}")
+        
+    if page == "1. 模型與資料載入":
+        st.success("模型與特徵編碼器已成功載入")
+        with st.expander("查看詳細載入記錄", expanded=False):
+            for line in load_log:
+                st.markdown(f"- {line}")
 else:
     st.error("無法載入模型，請確認 TensorFlow 安裝狀態")
 
