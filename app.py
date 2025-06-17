@@ -742,7 +742,8 @@ if page == "1. 上傳檔案與篩選分析期間":
     type=["csv"],
     help="需包含欄位：user_pseudo_id, event_time, action_group, source, medium, platform, staytime, has_shared, revisit_count"
         )
-
+    
+    st.markdown("### 步驟 2: 篩選分析期間")
     if uploaded_file is not None:
         try:
             user_df = pd.read_csv(uploaded_file)
@@ -764,7 +765,7 @@ if page == "1. 上傳檔案與篩選分析期間":
             user_df['event_time'] = pd.to_datetime(user_df['event_time'])
             min_date = user_df['event_time'].min().date()
             max_date = user_df['event_time'].max().date()
-st.markdown("### 步驟 1: 上傳檔案與篩選分析期間")
+
             col1, col2 = st.columns(2)
             with col1:
                 start_date = st.date_input("起始日期", value=min_date, min_value=min_date, max_value=max_date)
