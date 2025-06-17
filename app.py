@@ -828,7 +828,13 @@ elif page == "2. 預測與結果":
         st.button("開始預測", disabled=True, help="請先完成前面步驟")
         st.info("請先完成資料上傳與時間篩選後再進行預測")
         
+    render_next_page_button()
 
+# =========================
+# 頁面 3: 篩選與下載檔案
+# =========================
+
+elif page == "3. 篩選與下載檔案":
     # ==== 步驟 4: 預測結果總覽 ====
     st.markdown("### 步驟 3: 預測結果總覽")
 
@@ -864,14 +870,6 @@ elif page == "2. 預測與結果":
         with col4:
             st.metric("O2O 機率 ≥0.3 的用戶", "---")
 
-        render_next_page_button()
-
-# =========================
-# 頁面 3: 篩選與下載檔案
-# =========================
-
-elif page == "3. 篩選與下載檔案":
-      
     # ==== 步驟 5: 篩選預測結果 ====
     st.markdown("### 步驟 4: 篩選預測結果")
 
@@ -953,7 +951,7 @@ elif page == "3. 篩選與下載檔案":
         df = df[df["Top1_confidence"] >= min_confidence]
 
         # 4️⃣ 轉換機率篩選
-        st.markdown("**轉換機率篩選（任一條件符合即可)**")
+        st.markdown("**轉換機率篩選（任一條件符合即可**")
         enable_conversion_filter = st.checkbox("啟用轉換機率篩選條件（任一符合）", value=False)
 
         min_online_conv = 0.0
