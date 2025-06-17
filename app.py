@@ -1027,7 +1027,7 @@ elif page == "3. 預測結果篩選與下載":
                             history_mask[idx] = True
                             break
             filtered_df = filtered_df[history_mask]
-            filter_conditions.append(f"最近 {history_steps} 步內含 {'、'.join(selected_history_actions)}")
+            filter_conditions.append(f"最近 {history_steps} 步內包含： {'、'.join(selected_history_actions)}")
     
         # 2️⃣ 預測行為篩選
         if 'selected_prediction_actions' in locals() and selected_prediction_actions:
@@ -1039,7 +1039,7 @@ elif page == "3. 預測結果篩選與下載":
                         prediction_mask[idx] = True
                         break
             filtered_df = filtered_df[prediction_mask]
-            filter_conditions.append(f"Top{top_n} 中包含 {'、'.join(selected_prediction_actions)}")
+            filter_conditions.append(f"Top{top_n} 中包含： {'、'.join(selected_prediction_actions)}")
     
         # 3️⃣ Top1 信心門檻
         if 'min_confidence' in locals() and min_confidence > 0.0:
@@ -1054,13 +1054,13 @@ elif page == "3. 預測結果篩選與下載":
             )
             filtered_df = filtered_df[conversion_mask]
             filter_conditions.append(
-                f"網投機率 ≥ {min_online_conv:.2f} 或 O2O ≥ {min_o2o_conv:.2f}"
+                f"網投機率 ≥ {min_online_conv:.2f} 或 O2O預約機率 ≥ {min_o2o_conv:.2f}"
             )
     
         # 5️⃣ 行銷策略篩選
         if selected_strategies:
             filtered_df = filtered_df[filtered_df["Marketing_Strategy"].isin(selected_strategies)]
-            filter_conditions.append(f"行銷策略為 {'、'.join(selected_strategies)}")
+            filter_conditions.append(f"行銷策略為: {'、'.join(selected_strategies)}")
     
         # ✅ 條件摘要顯示
         st.markdown("#### 📌 篩選條件摘要")
