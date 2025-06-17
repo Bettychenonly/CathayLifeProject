@@ -795,10 +795,10 @@ if page == "1. 上傳檔案與時間篩選":
     
     
 # =========================
-# 頁面 2: 預測與結果
+# 頁面 2: 預測與結果總覽
 # =========================
 
-elif page == "2. 預測與結果":
+elif page == "2. 預測與結果總覽":
     st.markdown("### 步驟 2: 執行預測")
 
     prediction_ready = (
@@ -814,7 +814,11 @@ elif page == "2. 預測與結果":
         else:
             if st.button("開始預測", use_container_width=True):
                 with st.spinner("正在進行模型預測，請稍候..."):
-                    df_result = predict_from_uploaded_csv(st.session_state.filtered_input_data)
+                    try:
+                        df_result = predict_from_uploaded_csv(st.session_state.filtered_input_data)
+                    except Exception as e:
+                        st.error(f"模型預測失敗：{e}")
+                        df_result = pd.DataFrame()
 
                 if not df_result.empty:
                     df_result["Marketing_Strategy"] = df_result["Marketing_Strategy"].fillna("暫無建議，持續觀察")
@@ -825,18 +829,12 @@ elif page == "2. 預測與結果":
                         st.dataframe(df_result.head(), use_container_width=True)
                 else:
                     st.error("預測結果為空，請檢查資料格式")
+                    st.session_state.prediction_data = None
     else:
         st.button("開始預測", disabled=True, help="請先完成前面步驟")
         st.info("請先完成資料上傳與時間篩選後再進行預測")
-        
-    render_next_page_button()
 
-# =========================
-# 頁面 3: 篩選與下載檔案
-# =========================
-
-elif page == "3. 篩選與下載檔案":
-    # ==== 步驟 4: 預測結果總覽 ====
+    # === 預測結果總覽 ===
     st.markdown("### 步驟 3: 預測結果總覽")
 
     if st.session_state.get("prediction_data") is not None:
@@ -870,6 +868,8 @@ elif page == "3. 篩選與下載檔案":
             st.metric("網投機率 ≥0.3 的用戶", "---")
         with col4:
             st.metric("O2O 機率 ≥0.3 的用戶", "---")
+
+    render_next_page_button()
 
     # ==== 步驟 5: 篩選預測結果 ====
     st.markdown("### 步驟 4: 篩選預測結果")
