@@ -734,15 +734,15 @@ def render_next_page_button():
 # =========================
 # 頁面 1: 上傳與篩選
 # =========================
-if page == "1. 上傳檔案與篩選分析期間":
-    st.markdown("### 步驟 1: 上傳檔案與篩選分析期間")
+if page == "1. 上傳檔案與時間篩選":
+    st.markdown("### 步驟 1: 上傳檔案與時間篩選")
 
     uploaded_file = st.file_uploader(
     "上傳包含用戶行為歷程資料的 CSV 文件",
     type=["csv"],
     help="需包含欄位：user_pseudo_id, event_time, action_group, source, medium, platform, staytime, has_shared, revisit_count"
         )
-    
+
     if uploaded_file is not None:
         try:
             user_df = pd.read_csv(uploaded_file)
@@ -792,6 +792,7 @@ if page == "1. 上傳檔案與篩選分析期間":
             st.date_input("截止日期", disabled=True)
 
     render_next_page_button()
+    
     
 # =========================
 # 頁面 2: 預測與結果
