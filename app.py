@@ -748,7 +748,7 @@ if page == "1. 上傳檔案與篩選分析期間":
             user_df = pd.read_csv(uploaded_file)
             st.session_state.raw_uploaded_data = user_df
             st.success(f"上傳成功，共 {len(user_df)} 筆資料")
-
+    
             required_cols = [
                 "user_pseudo_id", "event_time", "action_group", "source",
                 "medium", "platform", "staytime", "has_shared", "revisit_count"
@@ -757,21 +757,22 @@ if page == "1. 上傳檔案與篩選分析期間":
             if missing_cols:
                 st.error(f"缺少欄位：{', '.join(missing_cols)}")
                 st.stop()
-
+    
             with st.expander("預覽資料"):
                 st.dataframe(user_df.head(10), use_container_width=True)
-
+    
             user_df['event_time'] = pd.to_datetime(user_df['event_time'])
             min_date = user_df['event_time'].min().date()
             max_date = user_df['event_time'].max().date()
-            
-st.markdown("#### 篩選分析期間")
+    
+            st.markdown("#### 篩選分析期間")
+    
             col1, col2 = st.columns(2)
             with col1:
                 start_date = st.date_input("起始日期", value=min_date, min_value=min_date, max_value=max_date)
             with col2:
                 end_date = st.date_input("截止日期", value=max_date, min_value=min_date, max_value=max_date)
-
+    
             if start_date > end_date:
                 st.error("起始日期不能大於截止日期")
                 st.session_state.filtered_input_data = None
@@ -779,7 +780,7 @@ st.markdown("#### 篩選分析期間")
                 filtered_df = user_df[(user_df['event_time'].dt.date >= start_date) & (user_df['event_time'].dt.date <= end_date)]
                 st.session_state.filtered_input_data = filtered_df
                 st.info(f"選定期間內資料: {len(filtered_df)} 筆 ({start_date} ~ {end_date})")
-
+    
         except Exception as e:
             st.error(f"上傳錯誤：{e}")
             st.session_state.raw_uploaded_data = None
