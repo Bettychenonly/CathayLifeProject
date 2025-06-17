@@ -884,14 +884,15 @@ elif page == "2. 開始預測":
     render_next_page_button()
 
 # =========================
-# 頁面 4: 篩選與下載
+# 頁面 3: 篩選與下載
 # =========================
 
 elif page == "3. 預測結果篩選與下載":
-    # ==== 步驟 5: 篩選預測結果 ====
     st.markdown("### 步驟 5: 篩選預測結果")
 
-    if st.session_state.get("prediction_data") is not None:
+    if st.session_state.get("prediction_data") is None:
+        st.warning("📤 請先完成預測後再執行篩選與下載")
+    else:
         df = st.session_state.prediction_data.copy()
         df["Marketing_Strategy"].fillna("暫無建議，持續觀察", inplace=True)
 
@@ -998,82 +999,38 @@ elif page == "3. 預測結果篩選與下載":
             df = df[df["Marketing_Strategy"].isin(selected_strategies)]
 
         st.session_state["filtered_prediction_data"] = df
-    else:
-        st.info("完成預測後即可篩選結果")
-        st.stop()
 
-    # ==== 步驟 6: 篩選條件總結與下載 ====
-    st.markdown("###  步驟 6: 確認條件並下載")
-    
-    if st.session_state.get("prediction_data") is not None:
+        # ==== 步驟 6: 確認條件並下載 ====
+        st.markdown("### 步驟 6: 確認條件並下載")
+
         df = st.session_state.prediction_data.copy()
-        filtered_df = df.copy()
+        filtered_df = st.session_state.get("filtered_prediction_data", df.copy())
         filter_conditions = []
-    
-        max_history_steps = 10  # 為安全起見固定最大步數
-    
-        # 1️⃣ 歷史行為篩選
-        if 'selected_history_actions' in locals() and selected_history_actions:
-            history_mask = pd.Series([False] * len(filtered_df), index=filtered_df.index)
-            for idx, row in filtered_df.iterrows():
-                for step in range(1, min(history_steps + 1, max_history_steps + 1)):
-                    if step == 1:
-                        if row.get('last_action_group') in selected_history_actions:
-                            history_mask[idx] = True
-                            break
-                    else:
-                        col_name = f"-{step}_action_group"
-                        if col_name in row and pd.notna(row[col_name]) and row[col_name] in selected_history_actions:
-                            history_mask[idx] = True
-                            break
-            filtered_df = filtered_df[history_mask]
+        max_history_steps = 10
+
+        # 條件摘要（可略）
+        if selected_history_actions:
             filter_conditions.append(f"最近 {history_steps} 步內包含： {'、'.join(selected_history_actions)}")
-    
-        # 2️⃣ 預測行為篩選
-        if 'selected_prediction_actions' in locals() and selected_prediction_actions:
-            prediction_mask = pd.Series([False] * len(filtered_df), index=filtered_df.index)
-            for idx, row in filtered_df.iterrows():
-                for n in range(1, top_n + 1):
-                    col_name = f"Top{n}_next_action_group"
-                    if col_name in row and row[col_name] in selected_prediction_actions:
-                        prediction_mask[idx] = True
-                        break
-            filtered_df = filtered_df[prediction_mask]
+        if selected_prediction_actions:
             filter_conditions.append(f"Top{top_n} 中包含： {'、'.join(selected_prediction_actions)}")
-    
-        # 3️⃣ Top1 信心門檻
-        if 'min_confidence' in locals() and min_confidence > 0.0:
-            filtered_df = filtered_df[filtered_df['Top1_confidence'] >= min_confidence]
+        if min_confidence > 0:
             filter_conditions.append(f"Top1 信心 ≥ {min_confidence:.2f}")
-    
-        # 4️⃣ 轉換機率篩選
         if enable_conversion_filter:
-            conversion_mask = (
-                (filtered_df['Online_conversion_prob'] >= min_online_conv) |
-                (filtered_df['O2O_reservation_prob'] >= min_o2o_conv)
-            )
-            filtered_df = filtered_df[conversion_mask]
             filter_conditions.append(
                 f"網投機率 ≥ {min_online_conv:.2f} 或 O2O預約機率 ≥ {min_o2o_conv:.2f}"
             )
-    
-        # 5️⃣ 行銷策略篩選
         if selected_strategies:
-            filtered_df = filtered_df[filtered_df["Marketing_Strategy"].isin(selected_strategies)]
             filter_conditions.append(f"行銷策略為: {'、'.join(selected_strategies)}")
-    
-        # ✅ 條件摘要顯示
+
         st.markdown("#### 📌 篩選條件摘要")
         if filter_conditions:
             for condition in filter_conditions:
                 st.markdown(f"- {condition}")
         else:
             st.markdown("_未設定任何篩選條件_")
-    
-        # 📊 顯示目前用戶數
+
         st.markdown(f"---\n📊 **目前符合條件的用戶數量**：{len(filtered_df)} 人")
-    
-        # ✅ 自訂檔名（選填）
+
         today_str = datetime.now().strftime("%Y%m%d")
         default_filename = f"prediction_result_{len(filtered_df)}users_{today_str}"
         custom_filename = st.text_input(
@@ -1081,13 +1038,11 @@ elif page == "3. 預測結果篩選與下載":
             value=default_filename,
             placeholder="ex: 旅平險_Top3_信心0.3"
         )
-    
-        # ✅ 確認後下載
+
         if len(filtered_df) > 0:
             if st.button("✅ 確認條件並準備下載"):
                 filename = f"{custom_filename}.csv"
                 export_cols = st.session_state.get("selected_columns", filtered_df.columns.tolist())
-    
                 csv = filtered_df[export_cols].to_csv(index=False).encode("utf-8-sig")
                 st.download_button(
                     label="📥 下載結果 CSV",
@@ -1097,15 +1052,12 @@ elif page == "3. 預測結果篩選與下載":
                     key="download_filtered_csv",
                     use_container_width=True
                 )
-    
                 with st.expander("📊 下載內容預覽", expanded=False):
                     st.dataframe(filtered_df[export_cols], use_container_width=True)
         else:
             st.warning("⚠️ 目前條件下沒有符合的用戶，請調整條件後再試")
-    
-    else:
-        st.info("📤 請先完成預測後再執行篩選與下載")
-        
+
+    # ✅ 不管是否有預測結果，永遠顯示換頁按鈕
     render_next_page_button()
 
 
