@@ -808,9 +808,8 @@ elif page == "2. 預測與結果總覽":
 
     if prediction_ready:
         if st.session_state.get("prediction_data") is not None:
-            st.success("已有預測結果")
-            with st.expander("查看預測結果", expanded=False):
-                st.dataframe(st.session_state.prediction_data.head(), use_container_width=True)
+            st.success("預測結果已生成")
+            
         else:
             if st.button("開始預測", use_container_width=True):
                 with st.spinner("正在進行模型預測，請稍候..."):
@@ -832,7 +831,7 @@ elif page == "2. 預測與結果總覽":
                     st.session_state.prediction_data = None
     else:
         st.button("開始預測", disabled=True, help="請先完成前面步驟")
-        st.info("請先完成資料上傳與時間篩選後再進行預測")
+        st.info("請先完成資料上傳以進行預測")
 
     # === 預測結果總覽 ===
     st.markdown("### 步驟 3: 預測結果總覽")
