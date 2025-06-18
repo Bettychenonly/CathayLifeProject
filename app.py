@@ -1044,6 +1044,7 @@ elif page == "3. 預測結果篩選與下載":
             default=st.session_state.selected_columns,
             key="column_selector"
         )
+        all_columns = st.session_state.get("all_columns", [])
         
         # 自動更新選中的欄位
         if selected_columns != st.session_state.selected_columns:
@@ -1073,8 +1074,8 @@ elif page == "3. 預測結果篩選與下載":
             )
         if selected_strategies:
             filter_conditions.append(f"行銷策略為: {'、'.join(selected_strategies)}")
-        if selected_cols and len(selected_cols) < len(all_cols):
-            filter_conditions.append(f"輸出欄位 {len(selected_cols)} ")
+        if selected_columns and len(selected_columns) < len(all_columns):
+            filter_conditions.append(f"輸出欄位 {len(selected_columns) / {len(all_columns)}} ")
 
         st.markdown("#### 篩選條件摘要")
         if filter_conditions:
@@ -1111,7 +1112,7 @@ elif page == "3. 預測結果篩選與下載":
         else:
             st.warning("⚠️ 目前條件下沒有符合的用戶，請調整條件後再試")
 
-    # 不管是否有預測結果，永遠顯示換頁按鈕
+    
     render_next_page_button()
 
 
