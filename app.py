@@ -604,10 +604,10 @@ def predict_from_uploaded_csv(df):
             
             # --- 組裝結果 ---
             result = {
-                # 🔑 基本身份信息
+                # 基本身份信息
                 "user_pseudo_id": user_id,
                 
-                # 🎯 完整Top5預測 (最重要，放在前面)
+                # 完整Top5預測 (最重要，放在前面)
                 "Top1_next_action_group": top5_actions[0],
                 "Top1_confidence": round(float(top5_confs[0]), 4),
                 "Top2_next_action_group": top5_actions[1],
@@ -619,18 +619,18 @@ def predict_from_uploaded_csv(df):
                 "Top5_next_action_group": top5_actions[4],
                 "Top5_confidence": round(float(top5_confs[4]), 4),
                 
-                # 📊 轉換機率和策略
+                # 轉換機率和策略
                 "Online_conversion_prob": round(float(y_pred_online[0][0]), 4),
                 "O2O_reservation_prob": round(float(y_pred_o2o[0][0]), 4),
                 "Marketing_Strategy": strategy,
                 
-                # 📱 當前行為信息
+                # 當前行為信息
                 "last_event_time": raw_last_event_time,
                 "last_platform": raw_last_platform,
                 "last_action": raw_last_action,
                 "last_action_group": raw_last_action_group,
                 
-                # 📚 歷史行為記錄
+                # 歷史行為記錄
                 **prev_records
             }
             
@@ -1022,14 +1022,14 @@ elif page == "3. 預測結果篩選與下載":
         if selected_strategies:
             filter_conditions.append(f"行銷策略為: {'、'.join(selected_strategies)}")
 
-        st.markdown("#### 📌 篩選條件摘要")
+        st.markdown("#### 篩選條件摘要")
         if filter_conditions:
             for condition in filter_conditions:
                 st.markdown(f"- {condition}")
         else:
             st.markdown("_未設定任何篩選條件_")
 
-        st.markdown(f"---\n📊 **目前符合條件的用戶數量**：{len(filtered_df)} 人")
+        st.markdown(f"---\n **目前符合條件的用戶數量**：{len(filtered_df)} 人")
 
         today_str = datetime.now().strftime("%Y%m%d")
         default_filename = f"prediction_result_{len(filtered_df)}users_{today_str}"
@@ -1045,19 +1045,19 @@ elif page == "3. 預測結果篩選與下載":
                 export_cols = st.session_state.get("selected_columns", filtered_df.columns.tolist())
                 csv = filtered_df[export_cols].to_csv(index=False).encode("utf-8-sig")
                 st.download_button(
-                    label="📥 下載結果 CSV",
+                    label=" 下載結果 CSV",
                     data=csv,
                     file_name=filename,
                     mime="text/csv",
                     key="download_filtered_csv",
                     use_container_width=True
                 )
-                with st.expander("📊 下載內容預覽", expanded=False):
+                with st.expander(" 下載內容預覽", expanded=False):
                     st.dataframe(filtered_df[export_cols], use_container_width=True)
         else:
             st.warning("⚠️ 目前條件下沒有符合的用戶，請調整條件後再試")
 
-    # ✅ 不管是否有預測結果，永遠顯示換頁按鈕
+    # 不管是否有預測結果，永遠顯示換頁按鈕
     render_next_page_button()
 
 
