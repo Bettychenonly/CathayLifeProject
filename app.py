@@ -1073,6 +1073,8 @@ elif page == "3. 預測結果篩選與下載":
             )
         if selected_strategies:
             filter_conditions.append(f"行銷策略為: {'、'.join(selected_strategies)}")
+        if selected_cols and len(selected_cols) < len(all_cols):
+            filter_conditions.append(f"輸出欄位 {len(selected_cols)} ")
 
         st.markdown("#### 篩選條件摘要")
         if filter_conditions:
