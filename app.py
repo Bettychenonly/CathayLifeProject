@@ -1013,7 +1013,7 @@ elif page == "3. 預測結果篩選與下載":
             if st.button("📊 核心欄位", key="select_core"):
                 # 按業務重要性排序的核心欄位
                 core_columns = [
-                    'user_pseudo_id', 
+                    'user_pseudo_id', 'last_action','last_action_group','last_event_time',
                     'Top1_next_action_group', 'Top1_confidence',
                     'Top2_next_action_group', 'Top2_confidence',
                     'Top3_next_action_group', 'Top3_confidence',
