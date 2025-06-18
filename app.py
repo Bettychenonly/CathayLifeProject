@@ -1001,6 +1001,55 @@ elif page == "3. 預測結果篩選與下載":
         if selected_strategies:
             df = df[df["Marketing_Strategy"].isin(selected_strategies)]
 
+        # 6️⃣ 欄位選擇
+        st.markdown("**選擇輸出欄位**")
+        
+        # 提供快速選項
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("🔄 全選", key="select_all"):
+                st.session_state.selected_columns = st.session_state.all_columns
+        with col2:
+            if st.button("📊 核心欄位", key="select_core"):
+                # 按業務重要性排序的核心欄位
+                core_columns = [
+                    'user_pseudo_id', 
+                    'Top1_next_action_group', 'Top1_confidence',
+                    'Top2_next_action_group', 'Top2_confidence',
+                    'Top3_next_action_group', 'Top3_confidence',
+                    'Online_conversion_prob', 'O2O_reservation_prob', 
+                    'Marketing_Strategy'
+                ]
+                st.session_state.selected_columns = [col for col in core_columns if col in st.session_state.all_columns]
+        with col3:
+            if st.button("🎯 預測欄位", key="select_prediction"):
+                prediction_cols = [
+                    'user_pseudo_id',
+                    'Top1_next_action_group', 'Top1_confidence',
+                    'Top2_next_action_group', 'Top2_confidence', 
+                    'Top3_next_action_group', 'Top3_confidence',
+                    'Top4_next_action_group', 'Top4_confidence',
+                    'Top5_next_action_group', 'Top5_confidence',
+                    'Online_conversion_prob', 'O2O_reservation_prob'
+                ]
+                st.session_state.selected_columns = [col for col in prediction_cols if col in st.session_state.all_columns]
+
+        # 欄位多選器
+        if 'selected_columns' not in st.session_state:
+            st.session_state.selected_columns = st.session_state.all_columns
+        
+        selected_columns = st.multiselect(
+            "選擇要輸出的欄位",
+            options=st.session_state.all_columns,
+            default=st.session_state.selected_columns,
+            key="column_selector"
+        )
+        
+        # 自動更新選中的欄位
+        if selected_columns != st.session_state.selected_columns:
+            st.session_state.selected_columns = selected_columns
+            st.rerun()
+
         st.session_state["filtered_prediction_data"] = df
 
         # ==== 步驟 6: 確認條件並下載 ====
@@ -1011,7 +1060,7 @@ elif page == "3. 預測結果篩選與下載":
         filter_conditions = []
         max_history_steps = 10
 
-        # 條件摘要（可略）
+        # 條件摘要
         if selected_history_actions:
             filter_conditions.append(f"最近 {history_steps} 步內包含： {'、'.join(selected_history_actions)}")
         if selected_prediction_actions:
