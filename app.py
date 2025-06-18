@@ -1073,9 +1073,9 @@ elif page == "3. 預測結果篩選與下載":
                 f"網投機率 ≥ {min_online_conv:.2f} 或 O2O預約機率 ≥ {min_o2o_conv:.2f}"
             )
         if selected_strategies:
-            filter_conditions.append(f"行銷策略為: {'、'.join(selected_strategies)}")
+            filter_conditions.append(f"行銷策略為： {'、'.join(selected_strategies)}")
         if selected_columns and len(selected_columns) < len(all_columns):
-            filter_conditions.append(f"輸出欄位 {len(selected_columns) / len(all_columns)} ")
+            filter_conditions.append(f"輸出欄位數量： {len(selected_columns)} / {len(all_columns)} ")
 
         st.markdown("#### 篩選條件摘要")
         if filter_conditions:
