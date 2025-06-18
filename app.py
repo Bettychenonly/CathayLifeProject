@@ -896,6 +896,9 @@ elif page == "3. 預測結果篩選與下載":
         df = st.session_state.prediction_data.copy()
         df["Marketing_Strategy"].fillna("暫無建議，持續觀察", inplace=True)
 
+        with st.expander("查看完整預測結果", expanded=False):
+            st.dataframe(df, use_container_width=True)
+
         # 1️⃣ 歷史行為篩選
         st.markdown("**歷史行為篩選**")
         history_steps = st.selectbox("最近Ｎ步內", options=list(range(1, 11)), index=6)
