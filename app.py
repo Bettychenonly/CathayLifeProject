@@ -1037,13 +1037,13 @@ elif page == "3. 預測結果篩選與下載":
         today_str = datetime.now().strftime("%Y%m%d")
         default_filename = f"prediction_result_{len(filtered_df)}users_{today_str}"
         custom_filename = st.text_input(
-            "📄 自訂檔名（選填，系統會自動加上 .csv）",
+            " 自訂檔名（選填，系統會自動加上 .csv）",
             value=default_filename,
             placeholder="ex: 旅平險_Top3_信心0.3"
         )
 
         if len(filtered_df) > 0:
-            if st.button("✅ 確認條件並準備下載"):
+            if st.button(" 確認條件並準備下載"):
                 filename = f"{custom_filename}.csv"
                 export_cols = st.session_state.get("selected_columns", filtered_df.columns.tolist())
                 csv = filtered_df[export_cols].to_csv(index=False).encode("utf-8-sig")
